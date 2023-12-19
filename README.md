@@ -1,4 +1,4 @@
-# Say-HI
+# Say-Hi
 
 ## Minimum Viable Product (MVP) for Chat Application
 
