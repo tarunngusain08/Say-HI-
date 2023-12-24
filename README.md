@@ -33,13 +33,6 @@
 - Implement proper error handling for user inputs and server-side operations
 - Provide meaningful error messages to users
 
-### User Experience (UX)
-- Intuitive user interface for messaging
-- Responsive design for different devices
-
-### Deployment
-- Deploy the application on a server (e.g., AWS, Heroku, DigitalOcean)
-- Set up a domain and configure SSL for secure communication
 
 ## Additional Functional Requirements
 
