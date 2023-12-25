@@ -49,7 +49,6 @@
 
 
 ## Database Design
-
 For our chat application, we'll employ a hybrid approach, utilizing both traditional relational databases and blob storage for efficient data management.
 
 1. **Relational Database:**
