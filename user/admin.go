@@ -1,5 +1,6 @@
 package user
 
+
 const administrator = "admin"
 
 type admin struct {
