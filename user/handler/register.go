@@ -1,33 +1,35 @@
-package handler
+package middleware
 
 import (
-	"Say-Hi/user/middleware"
-	"Say-Hi/user/repo"
+	"Say-Hi/user/contracts"
+	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"io"
 )
 
-type RegisterHandler struct {
-	repo *repo.RegisterRepo
-}
+func ValidateUserDetails(c *gin.Context) (*contracts.RegisterUser, error) {
+	if c.Request == nil {
+		return nil, errors.New("request error")
+	}
+	body := c.Request.Body
+	defer body.Close()
 
-func NewRegisterHandler(registerRepo *repo.RegisterRepo) *RegisterHandler {
-	return &RegisterHandler{repo: registerRepo}
-}
-
-func (r *RegisterHandler) Register(c *gin.Context) {
-
-	data, err := middleware.ValidateUserDetails(c)
+	data, err := io.ReadAll(body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
+		return nil, err
 	}
 
-	err = r.repo.Register(data)
+	var user contracts.RegisterUser
+	err = json.Unmarshal(data, &user) // Pass the address of the user variable
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+		return nil, err
 	}
 
-	c.JSON(http.StatusCreated, "Success")
+	if user.Name == "" || user.Email == "" || user.Password == "" || user.UserName == "" {
+		return nil, errors.New("fill all the mandatory fields")
+	}
+
+	return &user, nil // Return the address of the user variable
 }
