@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"Say-Hi/user"
+	"Say-Hi/user/contracts"
 	"Say-Hi/user/repo"
 	"encoding/json"
 	"errors"
@@ -9,20 +9,20 @@ import (
 	"io"
 )
 
-func ValidateUserDetails(c *gin.Context) error {
+func ValidateUserDetails(c *gin.Context) (*contracts.RegisterUser, error) {
 	body, err := c.Request.GetBody()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	data, err := io.ReadAll(body)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	var User user.Customer
-	err = json.Unmarshal(data, &User)
+	var user *contracts.RegisterUser
+	err = json.Unmarshal(data, user)
 
-	if User.GetUserName() == "" || User.GetEmail() == "" || User.GetPassword() == "" || User.GetName() == "" {
-		return errors.New("fill all the mandatory fields")
+	if user.Name == "" || user.Email == "" || user.Password == "" || user.Name == "" {
+		return nil, errors.New("fill all the mandatory fields")
 	}
 
 	userNameExists := func() bool {
@@ -30,7 +30,7 @@ func ValidateUserDetails(c *gin.Context) error {
 	}()
 
 	if userNameExists {
-		return errors.New("username exists")
+		return nil, errors.New("username exists")
 	}
 
 	emailExists := func() bool {
@@ -38,7 +38,7 @@ func ValidateUserDetails(c *gin.Context) error {
 	}()
 
 	if emailExists {
-		return errors.New("email exists, use different email or login")
+		return nil, errors.New("email exists, use different email or login")
 	}
-	return nil
+	return user, nil
 }
