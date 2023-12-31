@@ -2,19 +2,27 @@ package handler
 
 import (
 	"Say-Hi/user/middleware"
-	"Say-Hi/user/service"
+	"Say-Hi/user/repo"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func Register(c *gin.Context) {
+type RegisterHandler struct {
+	repo repo.RegisterRepo
+}
 
-	err := middleware.ValidateUserDetails(c)
+func NewRegisterHandler(registerRepo repo.RegisterRepo) *RegisterHandler {
+	return &RegisterHandler{repo: registerRepo}
+}
+
+func (r *RegisterHandler) Register(c *gin.Context) {
+
+	data, err := middleware.ValidateUserDetails(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "StatusBadRequest")
 	}
 
-	err = service.Register()
+	err = r.repo.Register(data)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "StatusInternalServerError")
 	}
