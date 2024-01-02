@@ -1,35 +1,40 @@
-package middleware
+package handler
 
 import (
-	"Say-Hi/user/contracts"
-	"encoding/json"
-	"errors"
+	"Say-Hi/user/external"
+	"Say-Hi/user/middleware"
+	"Say-Hi/user/service"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"io"
+	"net/http"
 )
 
-func ValidateUserDetails(c *gin.Context) (*contracts.RegisterUser, error) {
-	if c.Request == nil {
-		return nil, errors.New("request error")
-	}
-	body := c.Request.Body
-	defer body.Close()
+type RegisterHandler struct {
+	registerService *service.RegisterService
+	emailService    *external.EmailService
+}
 
-	data, err := io.ReadAll(body)
+func NewRegisterHandler(registerService *service.RegisterService, emailService *external.EmailService) *RegisterHandler {
+	return &RegisterHandler{
+		registerService: registerService,
+		emailService:    emailService,
+	}
+}
+
+func (r *RegisterHandler) Register(c *gin.Context) {
+
+	fmt.Println("Calling Register API")
+	data, err := middleware.ValidateUserDetails(c)
 	if err != nil {
-		return nil, err
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	var user contracts.RegisterUser
-	err = json.Unmarshal(data, &user) // Pass the address of the user variable
-
+	err = r.registerService.Register(r.emailService, data)
 	if err != nil {
-		return nil, err
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	if user.Name == "" || user.Email == "" || user.Password == "" || user.UserName == "" {
-		return nil, errors.New("fill all the mandatory fields")
-	}
-
-	return &user, nil // Return the address of the user variable
+	c.JSON(http.StatusCreated, "Success")
 }
