@@ -2,43 +2,41 @@ package middleware
 
 import (
 	"Say-Hi/user/contracts"
-	"Say-Hi/user/repo"
 	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"io"
+	"regexp"
 )
 
 func ValidateUserDetails(c *gin.Context) (*contracts.RegisterUser, error) {
-	body, err := c.Request.GetBody()
-	if err != nil {
-		return nil, err
+	if c.Request == nil {
+		return nil, errors.New("request error")
 	}
+	body := c.Request.Body
+	defer body.Close()
+
 	data, err := io.ReadAll(body)
 	if err != nil {
 		return nil, err
 	}
-	var user *contracts.RegisterUser
-	err = json.Unmarshal(data, user)
 
-	if user.Name == "" || user.Email == "" || user.Password == "" || user.Name == "" {
+	var user contracts.RegisterUser
+	err = json.Unmarshal(data, &user) // Pass the address of the user variable
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Name == "" || user.Email == "" || user.Password == "" || user.UserName == "" {
 		return nil, errors.New("fill all the mandatory fields")
 	}
 
-	userNameExists := func() bool {
-		return repo.UserNameExists()
-	}()
-
-	if userNameExists {
-		return nil, errors.New("username exists")
+	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	ok := emailRegex.MatchString(user.Email)
+	if !ok {
+		return nil, errors.New("invalid email")
 	}
 
-	emailExists := func() bool {
-		return repo.EmailExists()
-	}()
-
-	if emailExists {
-		return nil, errors.New("email exists, use different email or login")
-	}
-	return user, nil
+	return &user, nil // Return the address of the user variable
 }
