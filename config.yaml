@@ -1,0 +1,3 @@
+maxRetries: 3
+maxDelay: 16
+baseDelay: 1
