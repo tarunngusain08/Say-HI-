@@ -2,22 +2,23 @@
 package main
 
 import (
+	"Say-Hi/config"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	initDB()
-	initHandlers()
 	defer DB.Close()
+	initHandlers()
 	r := gin.New()
 	api := r.Group("/api")
 
 	user := api.Group("/user")
-	user.POST("register", handler.User.RegisterHandler.Register)
-	user.POST("verify-email", handler.User.VerifyEmailHandler.VerifyEmail)
+	user.POST("register", config.handler.User.RegisterHandler.Register)
+	user.POST("verify-email", config.handler.User.VerifyEmailHandler.VerifyEmail)
 
 	notification := api.Group("/notification")
-	notification.POST("send-email", handler.Notification.SendEmailHandler.SendEmail)
+	notification.POST("send-email", config.handler.Notification.SendEmailHandler.SendEmail)
 	r.Run("localhost:8080")
 }
