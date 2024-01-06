@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Say-Hi/config"
 	NotificationHandler "Say-Hi/notification/handler"
 	NotificationService "Say-Hi/notification/service"
 	"Say-Hi/user/external"
@@ -9,9 +10,7 @@ import (
 	UserService "Say-Hi/user/service"
 	"database/sql"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"log"
-	"os"
 	"time"
 )
 
@@ -24,7 +23,6 @@ const (
 var (
 	DB      *sql.DB
 	handler *Handler
-	Config  *Configuration
 )
 
 type Handler struct {
@@ -49,35 +47,15 @@ type Message struct {
 type ChatHistory struct {
 }
 
-type Configuration struct {
-	MaxRetries int `yaml:"maxRetries"`
-	BaseDelay  int `yaml:"baseDelay"`
-	MaxDelay   int `yaml:"maxDelay"`
-}
-
-func initDefaultValues() {
-	yamlFile, err := os.ReadFile("config.yaml")
-	if err != nil {
-		panic("Error reading YAML file")
-	}
-
-	// Parse the YAML content into a Configuration struct
-	Config = new(Configuration)
-	err = yaml.Unmarshal(yamlFile, &Config)
-	if err != nil {
-		panic("Error unmarshalling YAML")
-	}
-}
-
 func initHandlers() {
 
-	initDefaultValues()
+	config.Init()
 	registerRepo := UserRepo.NewRegisterRepo(DB)
 	verifyEmailRepo := UserRepo.NewVerifyEmailRepo(DB)
 
 	registerService := UserService.NewRegisterService(registerRepo)
 	verifyEmailService := UserService.NewVerifyEmailService(verifyEmailRepo)
-	emailService := external.NewEmailService(Config.MaxRetries, time.Duration(Config.BaseDelay), time.Duration(Config.MaxDelay))
+	emailService := external.NewEmailService(config.Config.MaxRetries, time.Duration(config.Config.BaseDelay), time.Duration(config.Config.MaxDelay))
 	sendEmailService := NotificationService.NewSendEmailService()
 
 	registerHandler := UserHandler.NewRegisterHandler(registerService, emailService)
