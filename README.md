@@ -41,9 +41,6 @@
 ### File Attachments
 - Allow users to send and receive file attachments (images, documents)
 
-### Emoji and Stickers
-- Include support for emojis and stickers in the chat
-
 ### Search Functionality
 - Implement a search feature to find and retrieve past messages
 
