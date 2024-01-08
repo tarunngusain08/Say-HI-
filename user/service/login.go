@@ -7,10 +7,10 @@ import (
 )
 
 type LoginService struct {
-	repo *repo.LoginRepo
+	repo *repo.LogouRepo
 }
 
-func NewLoginRepo(loginRepo *repo.LoginRepo) *LoginService {
+func NewLoginService(loginRepo *repo.LogouRepo) *LoginService {
 	return &LoginService{repo: loginRepo}
 }
 
