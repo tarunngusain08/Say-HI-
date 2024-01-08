@@ -2,7 +2,7 @@
 package main
 
 import (
-	"Say-Hi/config"
+	"Say-Hi/auth"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -15,10 +15,15 @@ func main() {
 	api := r.Group("/api")
 
 	user := api.Group("/user")
-	user.POST("register", config.handler.User.RegisterHandler.Register)
-	user.POST("verify-email", config.handler.User.VerifyEmailHandler.VerifyEmail)
+
+	user.POST("/register", handler.User.RegisterHandler.Register)
+	user.POST("/verify-email", handler.User.VerifyEmailHandler.VerifyEmail)
+	user.POST("/login", handler.User.LoginHandler.Login)
+
+	r.Use(auth.Middleware())
+	user.POST("/logout", handler.User.LogoutHandler.Logout)
 
 	notification := api.Group("/notification")
-	notification.POST("send-email", config.handler.Notification.SendEmailHandler.SendEmail)
+	notification.POST("send-email", handler.Notification.SendEmailHandler.SendEmail)
 	r.Run("localhost:8080")
 }
