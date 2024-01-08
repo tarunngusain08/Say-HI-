@@ -2,8 +2,9 @@ package handler
 
 import (
 	"Say-Hi/auth"
-	"Say-Hi/user/middleware"
 	"Say-Hi/user/service"
+	"Say-Hi/user/validators"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -13,7 +14,7 @@ type LoginHandler struct {
 	jwt     *auth.JWT
 }
 
-func NewLoginRepo(service *service.LoginService, jwt *auth.JWT) *LoginHandler {
+func NewLoginHandler(service *service.LoginService, jwt *auth.JWT) *LoginHandler {
 	return &LoginHandler{
 		service: service,
 		jwt:     jwt,
@@ -22,17 +23,21 @@ func NewLoginRepo(service *service.LoginService, jwt *auth.JWT) *LoginHandler {
 
 func (l *LoginHandler) Login(c *gin.Context) {
 
-	userDetails, err := middleware.ValidateLoginUserDetails(c)
+	fmt.Println("Calling Login API")
+	userDetails, err := validators.ValidateLoginUserDetails(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "StatusBadRequest")
+		c.JSON(http.StatusBadRequest, "Invalid login details")
+		return
 	}
 
 	err = l.service.Login(userDetails)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "StatusInternalServerError")
+		c.JSON(http.StatusInternalServerError, "Unable to login, Something went wrong")
+		return
 	}
 
 	token, err := l.jwt.GenerateJWT(userDetails.UserName, userDetails.Password)
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.Header("Authorization", "Bearer "+token)
+	c.JSON(http.StatusOK, "Logged in")
 }
