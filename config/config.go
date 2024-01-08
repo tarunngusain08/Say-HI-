@@ -6,16 +6,17 @@ import (
 )
 
 type Configuration struct {
-	MaxRetries      int `yaml:"maxRetries"`
-	BaseDelay       int `yaml:"baseDelay"`
-	MaxDelay        int `yaml:"maxDelay"`
-	SecretKeyLength int `yaml:"secretKeyLength"`
+	MaxRetries      int    `yaml:"maxRetries"`
+	BaseDelay       int    `yaml:"baseDelay"`
+	MaxDelay        int    `yaml:"maxDelay"`
+	SecretKeyLength int    `yaml:"secretKeyLength"`
+	SecretKey       string `yaml:"secretKey"`
 }
 
 var Config *Configuration
 
 func Init() {
-	yamlFile, err := os.ReadFile("config.yaml")
+	yamlFile, err := os.ReadFile("config/config.yaml")
 	if err != nil {
 		panic("Error reading YAML file")
 	}
@@ -26,4 +27,10 @@ func Init() {
 	if err != nil {
 		panic("Error unmarshalling YAML")
 	}
+
+	secretKey, err := GenerateRandomSecretKey()
+	if err != nil {
+		panic("Error generating Secret Key")
+	}
+	Config.SecretKey = secretKey
 }
