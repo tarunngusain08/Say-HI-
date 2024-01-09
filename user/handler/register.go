@@ -2,8 +2,8 @@ package handler
 
 import (
 	"Say-Hi/user/external"
-	"Say-Hi/user/middleware"
 	"Say-Hi/user/service"
+	"Say-Hi/user/validators"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -24,7 +24,7 @@ func NewRegisterHandler(registerService *service.RegisterService, emailService *
 func (r *RegisterHandler) Register(c *gin.Context) {
 
 	fmt.Println("Calling Register API")
-	data, err := middleware.ValidateUserDetails(c)
+	data, err := validators.ValidateRegisterUserDetails(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
