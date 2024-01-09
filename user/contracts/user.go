@@ -17,3 +17,10 @@ type VerifyEmailRequest struct {
 	OTP   string `json:"otp"`
 	Email string `json:"email"`
 }
+
+type LoginUser struct {
+	UserId   string `json:"userId"`
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+}
