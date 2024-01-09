@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Say-Hi/auth"
 	"Say-Hi/config"
 	NotificationHandler "Say-Hi/notification/handler"
 	NotificationService "Say-Hi/notification/service"
@@ -35,6 +36,8 @@ type Handler struct {
 type User struct {
 	RegisterHandler    *UserHandler.RegisterHandler
 	VerifyEmailHandler *UserHandler.VerifyEmailHandler
+	LoginHandler       *UserHandler.LoginHandler
+	LogoutHandler      *UserHandler.LogoutHandler
 }
 
 type Notification struct {
@@ -52,13 +55,20 @@ func initHandlers() {
 	config.Init()
 	registerRepo := UserRepo.NewRegisterRepo(DB)
 	verifyEmailRepo := UserRepo.NewVerifyEmailRepo(DB)
+	loginRepo := UserRepo.NewLoginRepo(DB)
+	logoutRepo := UserRepo.NewLogoutRepo(DB)
 
 	registerService := UserService.NewRegisterService(registerRepo)
+	loginService := UserService.NewLoginService(loginRepo)
+	logoutService := UserService.NewLogoutService(logoutRepo)
 	verifyEmailService := UserService.NewVerifyEmailService(verifyEmailRepo)
 	emailService := external.NewEmailService(config.Config.MaxRetries, time.Duration(config.Config.BaseDelay), time.Duration(config.Config.MaxDelay))
 	sendEmailService := NotificationService.NewSendEmailService()
 
 	registerHandler := UserHandler.NewRegisterHandler(registerService, emailService)
+	jwtHandler := auth.NewJWT()
+	loginHandler := UserHandler.NewLoginHandler(loginService, jwtHandler)
+	logoutHandler := UserHandler.NewLogoutHandler(logoutService)
 	verifyEmailHandler := UserHandler.NewVerifyEmailHandler(verifyEmailService)
 	notificationHandler := NotificationHandler.NewSendEmailHandler(sendEmailService)
 
@@ -66,6 +76,8 @@ func initHandlers() {
 
 	handler.User.RegisterHandler = registerHandler
 	handler.User.VerifyEmailHandler = verifyEmailHandler
+	handler.User.LoginHandler = loginHandler
+	handler.User.LogoutHandler = logoutHandler
 
 	handler.Notification.SendEmailHandler = notificationHandler
 }
