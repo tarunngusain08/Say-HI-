@@ -38,9 +38,6 @@
 ### Message Formatting
 - Support for basic text formatting (bold, italic, etc.)
 
-### File Attachments
-- Allow users to send and receive file attachments (images, documents)
-
 ### Search Functionality
 - Implement a search feature to find and retrieve past messages
 
