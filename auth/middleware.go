@@ -23,6 +23,7 @@ func Middleware() gin.HandlerFunc {
 			return
 		}
 
+		// Verify JWT Token
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte(config.Config.SecretKey), nil
 		})
