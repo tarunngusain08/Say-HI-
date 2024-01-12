@@ -1,21 +1,20 @@
 package auth
 
 import (
+	"Say-Hi/config"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
-type JWT struct {
-	secretKey string
-}
+type JWT struct{}
 
-func NewJWT(secretKey string) *JWT {
-	return &JWT{secretKey: secretKey}
+func NewJWT() *JWT {
+	return &JWT{}
 }
 
 func (j *JWT) GenerateJWT(username, password string) (string, error) {
 	// Replace with your secret key
-	secretKey := []byte(j.secretKey)
+	secretKey := []byte(config.Config.SecretKey)
 
 	// Create the token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
