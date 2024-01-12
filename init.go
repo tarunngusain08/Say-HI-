@@ -34,10 +34,11 @@ type Handler struct {
 }
 
 type User struct {
-	RegisterHandler    *UserHandler.RegisterHandler
-	VerifyEmailHandler *UserHandler.VerifyEmailHandler
-	LoginHandler       *UserHandler.LoginHandler
-	LogoutHandler      *UserHandler.LogoutHandler
+	RegisterHandler       *UserHandler.RegisterHandler
+	VerifyEmailHandler    *UserHandler.VerifyEmailHandler
+	LoginHandler          *UserHandler.LoginHandler
+	LogoutHandler         *UserHandler.LogoutHandler
+	ForgotPasswordHandler *UserHandler.ForgotPasswordHandler
 }
 
 type Notification struct {
@@ -57,11 +58,13 @@ func initHandlers() {
 	verifyEmailRepo := UserRepo.NewVerifyEmailRepo(DB)
 	loginRepo := UserRepo.NewLoginRepo(DB)
 	logoutRepo := UserRepo.NewLogoutRepo(DB)
+	forgotPasswordRepo := UserRepo.NewForgotPasswordRepo(DB)
 
 	registerService := UserService.NewRegisterService(registerRepo)
 	loginService := UserService.NewLoginService(loginRepo)
 	logoutService := UserService.NewLogoutService(logoutRepo)
 	verifyEmailService := UserService.NewVerifyEmailService(verifyEmailRepo)
+	forgotPasswordService := UserService.NewForgotPasswordService(forgotPasswordRepo)
 	emailService := external.NewEmailService(config.Config.MaxRetries, time.Duration(config.Config.BaseDelay), time.Duration(config.Config.MaxDelay))
 	sendEmailService := NotificationService.NewSendEmailService()
 
@@ -70,6 +73,7 @@ func initHandlers() {
 	loginHandler := UserHandler.NewLoginHandler(loginService, jwtHandler)
 	logoutHandler := UserHandler.NewLogoutHandler(logoutService)
 	verifyEmailHandler := UserHandler.NewVerifyEmailHandler(verifyEmailService)
+	forgotPasswordHandler := UserHandler.NewForgotPasswordHandler(forgotPasswordService, emailService)
 	notificationHandler := NotificationHandler.NewSendEmailHandler(sendEmailService)
 
 	handler = new(Handler)
@@ -78,6 +82,7 @@ func initHandlers() {
 	handler.User.VerifyEmailHandler = verifyEmailHandler
 	handler.User.LoginHandler = loginHandler
 	handler.User.LogoutHandler = logoutHandler
+	handler.User.ForgotPasswordHandler = forgotPasswordHandler
 
 	handler.Notification.SendEmailHandler = notificationHandler
 }
