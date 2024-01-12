@@ -19,6 +19,7 @@ func main() {
 	user.POST("/register", handler.User.RegisterHandler.Register)
 	user.POST("/verify-email", handler.User.VerifyEmailHandler.VerifyEmail)
 	user.POST("/login", handler.User.LoginHandler.Login)
+	user.POST("/logout", handler.User.LogoutHandler.Logout)
 
 	r.Use(auth.Middleware())
 	user.POST("/logout", handler.User.LogoutHandler.Logout)
