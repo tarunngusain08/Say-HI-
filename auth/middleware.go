@@ -9,8 +9,8 @@ import (
 
 var blacklist = make(map[string]bool)
 
-// When a user logs out, add their token to the blacklist
-func addToBlacklist(token string) {
+// AddToBlacklist When a user logs out, add their token to the blacklist
+func AddToBlacklist(token string) {
 	blacklist[token] = true
 }
 
@@ -23,7 +23,13 @@ func Middleware() gin.HandlerFunc {
 			return
 		}
 
-		// Verify JWT Token
+		if _, ok := blacklist[tokenString]; ok {
+			c.JSON(http.StatusUnauthorized, gin.H{config.Error: config.Unauthorized})
+			c.Abort()
+			return
+		}
+
+		// Verify JWT token
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte(config.Config.SecretKey), nil
 		})
