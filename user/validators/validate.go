@@ -9,7 +9,7 @@ import (
 	"regexp"
 )
 
-func ValidateRegisterUserDetails(c *gin.Context) (*contracts.RegisterUser, error) {
+func ValidateRegisterUserDetails(c *gin.Context) (*contracts.UserDetails, error) {
 	if c.Request == nil {
 		return nil, errors.New("request error")
 	}
@@ -21,7 +21,7 @@ func ValidateRegisterUserDetails(c *gin.Context) (*contracts.RegisterUser, error
 		return nil, err
 	}
 
-	var user contracts.RegisterUser
+	var user contracts.UserDetails
 	err = json.Unmarshal(data, &user) // Pass the address of the user variable
 
 	if err != nil {
@@ -41,7 +41,7 @@ func ValidateRegisterUserDetails(c *gin.Context) (*contracts.RegisterUser, error
 	return &user, nil // Return the address of the user variable
 }
 
-func ValidateLoginUserDetails(c *gin.Context) (*contracts.LoginUser, error) {
+func ValidateLoginUserDetails(c *gin.Context) (*contracts.UserDetails, error) {
 	if c.Request == nil {
 		return nil, errors.New("request error")
 	}
@@ -53,7 +53,7 @@ func ValidateLoginUserDetails(c *gin.Context) (*contracts.LoginUser, error) {
 		return nil, err
 	}
 
-	var user contracts.LoginUser
+	var user contracts.UserDetails
 	err = json.Unmarshal(data, &user) // Pass the address of the user variable
 
 	if err != nil {
@@ -73,4 +73,38 @@ func ValidateLoginUserDetails(c *gin.Context) (*contracts.LoginUser, error) {
 	}
 
 	return &user, nil // Return the address of the user variable
+}
+
+func ValidateForgotPasswordUserDetails(c *gin.Context) (*contracts.UserDetails, error) {
+	if c.Request == nil {
+		return nil, errors.New("request error")
+	}
+	body := c.Request.Body
+	defer body.Close()
+
+	data, err := io.ReadAll(body)
+	if err != nil {
+		return nil, err
+	}
+
+	var user contracts.UserDetails
+	err = json.Unmarshal(data, &user) // Pass the address of the user variable
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Email == "" {
+		return nil, errors.New("fill all the mandatory fields")
+	}
+
+	if user.Email != "" {
+		emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+		ok := emailRegex.MatchString(user.Email)
+		if !ok {
+			return nil, errors.New("invalid email")
+		}
+	}
+
+	return &user, nil
 }
