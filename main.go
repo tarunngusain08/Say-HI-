@@ -1,4 +1,3 @@
-// Import necessary packages
 package main
 
 import (
