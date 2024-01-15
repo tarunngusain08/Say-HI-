@@ -1,3 +1,4 @@
+// Import necessary packages
 package main
 
 import (
@@ -21,6 +22,7 @@ func main() {
 
 	r.Use(auth.Middleware())
 	user.POST("/logout", handler.User.LogoutHandler.Logout)
+	user.POST("/forgot-password", handler.User.ForgotPasswordHandler.ForgotPassword)
 
 	notification := api.Group("/notification")
 	notification.POST("send-email", handler.Notification.SendEmailHandler.SendEmail)
