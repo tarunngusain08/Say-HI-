@@ -7,10 +7,6 @@
 - User login/logout
 - Password hashing for security
 
-### User Profile
-- Allow users to set and update their profiles
-- Display user information in the chat
-
 ### Messaging System
 - Enable users to send text messages
 - Real-time updates for new messages
