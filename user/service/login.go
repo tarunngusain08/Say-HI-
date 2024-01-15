@@ -3,7 +3,7 @@ package service
 import (
 	"Say-Hi/user/contracts"
 	"Say-Hi/user/repo"
-	"errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginService struct {
@@ -14,25 +14,36 @@ func NewLoginService(loginRepo *repo.LoginRepo) *LoginService {
 	return &LoginService{repo: loginRepo}
 }
 
-func (l *LoginService) Login(userDetails *contracts.LoginUser) error {
+func (l *LoginService) Login(userDetails *contracts.UserDetails) error {
 	if userDetails.UserName != "" {
 		password, err := l.repo.GetUserPasswordByUsername(userDetails.UserName)
 		if err != nil {
 			return err
 		}
-		if password != userDetails.Password {
-			return errors.New("wrong password")
+		err = l.checkPasswordHash(password, userDetails.Password)
+		if err != nil {
+			return err
 		}
-	}
-	if userDetails.Email != "" {
+	} else if userDetails.Email != "" {
 		username, password, err := l.repo.GetUserPasswordByEmail(userDetails.Email)
 		if err != nil {
 			return err
 		}
-		if password != userDetails.Password {
-			return errors.New("wrong password")
+		err = l.checkPasswordHash(password, userDetails.Password)
+		if err != nil {
+			return err
 		}
 		userDetails.UserName = username
+	}
+	return nil
+}
+
+// checkPasswordHash checks if the provided password matches the hashed password
+func (l *LoginService) checkPasswordHash(password, hash string) error {
+	// Compare the password with the hashed version
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		return err
 	}
 	return nil
 }
