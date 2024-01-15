@@ -16,13 +16,8 @@
 - Create individual chat rooms for each pair of users
 - Display sender and receiver information
 
-### Notification
-- Notify users about new messages
-- Implement real-time updates using WebSocket or a similar technology
-
 ### Security
 - Implement end-to-end encryption for messages (optional but recommended)
-- Protect against common security threats (e.g., SQL injection, cross-site scripting)
 
 ### Error Handling
 - Implement proper error handling for user inputs and server-side operations
