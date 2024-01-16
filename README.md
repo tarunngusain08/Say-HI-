@@ -41,7 +41,6 @@ For our chat application, we'll employ a hybrid approach, utilizing both traditi
    - **Entities:**
      - **User:** Stores user information, including user details and profile settings.
      - **Message:** Manages message metadata such as sender, receiver, timestamp, and references to message content.
-     - **Notification:** Holds user-specific notifications about various events.
 
 2. **Blob Storage:**
    - Stores large message bodies, file attachments, and other binary data.
@@ -55,9 +54,3 @@ For our chat application, we'll employ a hybrid approach, utilizing both traditi
 
 2. **User to Chat History (N:N):**
    - Many users can have many chat histories, each associated with a specific chat partner.
-
-3. **User to Notification (1:N):**
-   - One user can have multiple notifications.
-
-4. **Message to Notification (1:1 or 1:N, depending on use case):**
-   - One message may be associated with one or more notifications, depending on the notification requirements.
