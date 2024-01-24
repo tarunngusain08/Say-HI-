@@ -56,8 +56,7 @@ func (m *MessageHandler) handleWebSocket(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		// Handle your message logic here (e.g., store in database, send to recipient)
-		// For simplicity, we'll broadcast the message to all connected clients.
+		// broadcast the message to all connected clients.
 
 		m.mu.Lock()
 		for c := range m.clients {
