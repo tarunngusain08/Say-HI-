@@ -79,6 +79,7 @@ func main() {
 			return true
 		},
 	}
+	
 	h := NewMessageHandler(upgrader)
 	http.HandleFunc("/ws", h.handleWebSocket)
 	port := 8080
