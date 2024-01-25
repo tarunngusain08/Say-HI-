@@ -1,13 +1,11 @@
-package main
+package handler
 
 import (
 	"Say-Hi/message/contracts"
-	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"sync"
-
-	"github.com/gorilla/websocket"
 )
 
 type MessageHandler struct {
@@ -24,7 +22,7 @@ func NewMessageHandler(upgrader websocket.Upgrader) *MessageHandler {
 	}
 }
 
-func (m *MessageHandler) handleWebSocket(w http.ResponseWriter, r *http.Request) {
+func (m *MessageHandler) SendMessage(w http.ResponseWriter, r *http.Request) {
 	conn, err := m.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -56,8 +54,6 @@ func (m *MessageHandler) handleWebSocket(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		// broadcast the message to all connected clients.
-
 		m.mu.Lock()
 		for c := range m.clients {
 			if c.Username == msg.Recipient {
@@ -69,20 +65,4 @@ func (m *MessageHandler) handleWebSocket(w http.ResponseWriter, r *http.Request)
 		}
 		m.mu.Unlock()
 	}
-}
-
-func main() {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-	}
-	
-	h := NewMessageHandler(upgrader)
-	http.HandleFunc("/ws", h.handleWebSocket)
-	port := 8080
-	fmt.Printf("Server is running on :%d\n", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }
