@@ -4,7 +4,7 @@ package main
 import (
 	"Say-Hi/auth"
 	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq"
+	"net/http"
 )
 
 func main() {
@@ -26,5 +26,7 @@ func main() {
 
 	notification := api.Group("/notification")
 	notification.POST("send-email", handler.Notification.SendEmailHandler.SendEmail)
+	
+	http.HandleFunc("/send-message", handler.MessageHandler.SendMessage)
 	r.Run("localhost:8080")
 }
