@@ -3,6 +3,7 @@ package main
 import (
 	"Say-Hi/auth"
 	"Say-Hi/config"
+	MessageHandler "Say-Hi/message/handler"
 	NotificationHandler "Say-Hi/notification/handler"
 	NotificationService "Say-Hi/notification/service"
 	"Say-Hi/user/external"
@@ -11,7 +12,9 @@ import (
 	UserService "Say-Hi/user/service"
 	"database/sql"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -30,7 +33,6 @@ type Handler struct {
 	User
 	Notification
 	Message
-	ChatHistory
 }
 
 type User struct {
@@ -46,9 +48,7 @@ type Notification struct {
 }
 
 type Message struct {
-}
-
-type ChatHistory struct {
+	MessageHandler *MessageHandler.MessageHandler
 }
 
 func initHandlers() {
@@ -85,6 +85,16 @@ func initHandlers() {
 	handler.User.ForgotPasswordHandler = forgotPasswordHandler
 
 	handler.Notification.SendEmailHandler = notificationHandler
+
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+	messageHandler := MessageHandler.NewMessageHandler(upgrader)
+	handler.Message.MessageHandler = messageHandler
 }
 
 func connectDB() (*sql.DB, error) {
