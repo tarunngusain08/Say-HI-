@@ -16,21 +16,9 @@
 - Create individual chat rooms for each pair of users
 - Display sender and receiver information
 
-### Security
-- Implement end-to-end encryption for messages (optional but recommended)
-
 ### Error Handling
 - Implement proper error handling for user inputs and server-side operations
 - Provide meaningful error messages to users
-
-
-## Additional Functional Requirements
-
-### Message Formatting
-- Support for basic text formatting (bold, italic, etc.)
-
-### Search Functionality
-- Implement a search feature to find and retrieve past messages
 
 
 ## Database Design
